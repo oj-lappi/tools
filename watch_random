@@ -1,0 +1,45 @@
+#!/bin/bash
+
+print_usage(){
+printf "$0 [-n screens] dir
+
+Plays videos on n screens from dir"
+}
+
+n_screens=1
+
+while getopts n: o
+do
+	case "$o" in
+	 n)
+		 echo "$OPTARG screens"
+		if [ $OPTARG ]
+		then
+	 		n_flag=true
+	 		n_screens="$OPTARG"
+		else
+			print_usage
+			exit 1
+		fi
+		;;
+	 *)
+	 	print_usage
+                exit 1
+		;;
+	esac
+done
+
+if [ $n_flag ]
+then
+	dir=$3
+else
+	dir=$1
+fi
+
+echo "Watching videos on $n_screens screens"
+
+for (( i = 0; i < $n_screens; i++ ))
+do
+	echo "starting window $i"
+	cvlc $dir/**/*{mp4,webm} -Z&
+done

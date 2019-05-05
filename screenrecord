@@ -1,0 +1,104 @@
+#!/bin/bash
+
+print_usage(){
+cat << EOF
+Usage: screenrecord [--mic] [--program-audio] [--display DISPLAY_NAME]] [ --framerate RATE] [--size SIZE] [OUTPUT_FILE (default out.mp4)]
+
+Record display with ffmpeg.
+EOF
+}
+
+
+
+#Parse arguments
+runopt=`getopt -n $0 -o h? -l help,microphone,program_audio,display:,framerate:,size:, -- "$@"`
+if [ $? != 0 ] ; then echo "Exiting" >&2 ; exit 1 ; fi
+eval set -- "$runopt"
+
+#Defaults
+output=out.mp4
+display=:0
+framerate=30
+#Resolution or size?
+size=1920x1080
+flag_sound=0
+flag_mic=0
+flag_program_audio=0
+mic_device=0,0
+
+audio_codec=aac
+video_codec=libx264
+#lossless
+crf=0	
+
+while true;do
+case "$1" in
+
+	-h|--help|?)
+		print_usage
+		exit 0
+		;;
+
+	--mic|--microphone)
+		flag_sound=1
+		flag_mic=1
+		;;
+	--framerate)
+		framerate=$2  
+                shift
+                ;;
+	--size)
+		size=$2
+                shift
+                ;;
+	--program-audio)
+		flag_sound=1
+		flag_program_audio=1
+		;;
+	--display)
+		display=$2
+                shift
+		;;
+	--)
+		shift
+		break
+		;;
+	* ) break ;;
+esac
+shift
+done
+
+
+if [ $1 ];then
+	output=$1
+	IFS='.'
+	read output_name output_ext <<<$output
+
+	if [ -z $output_ext ];then
+		output=${output_name}.mp4
+
+	fi
+fi
+
+#TODO:Use exec or something to build the command and run it once
+if [ $flag_sound -ne 0 ];then
+	if [ $flag_program_audio -ne 0 ];then
+		ffmpeg 	-f alsa -ac 2 -i loopout \
+			-f alsa -ac 2 -i hw:$mic_device \
+			-f x11grab -r $framerate -s $size -i $display \
+			-acodec $audio_codec -vcodec $video_codec \
+			-crf $crf -preset medium $output
+	else
+		ffmpeg 	-f alsa -ac 2 -i hw:$mic_device \
+			-f x11grab -r $framerate -s $size -i $display \
+			-acodec $audio_codec -vcodec $video_codec \
+			-crf $crf -preset medium $output
+
+	fi
+else
+	ffmpeg 	-f x11grab -r $framerate -s $size -i $display \
+		-acodec $audio_codec -vcodec $video_codec \
+		-crf $crf -preset medium $output
+fi
+
+

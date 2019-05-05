@@ -1,0 +1,12 @@
+#!/bin/bash
+
+print_usage(){
+printf "$0 COMIC_DIR...
+
+Creates a cbz named COMIC_DIR.cbz for every COMIC_DIR."
+}
+
+for src in "$@"
+do
+	zip -r $src.cbz $src
+done
