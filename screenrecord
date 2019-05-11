@@ -24,11 +24,11 @@ size=1920x1080
 flag_sound=0
 flag_mic=0
 flag_program_audio=0
-mic_device=0,0
+mic_device=1,0
 
 audio_codec=aac
 video_codec=libx264
-#lossless
+#lossless, not used
 crf=0	
 
 while true;do
@@ -87,18 +87,18 @@ if [ $flag_sound -ne 0 ];then
 			-f alsa -ac 2 -i hw:$mic_device \
 			-f x11grab -r $framerate -s $size -i $display \
 			-acodec $audio_codec -vcodec $video_codec \
-			-crf $crf -preset medium $output
+			-preset medium $output
 	else
 		ffmpeg 	-f alsa -ac 2 -i hw:$mic_device \
 			-f x11grab -r $framerate -s $size -i $display \
 			-acodec $audio_codec -vcodec $video_codec \
-			-crf $crf -preset medium $output
+			-preset medium $output
 
 	fi
 else
 	ffmpeg 	-f x11grab -r $framerate -s $size -i $display \
 		-acodec $audio_codec -vcodec $video_codec \
-		-crf $crf -preset medium $output
+		-preset medium $output
 fi
 
 

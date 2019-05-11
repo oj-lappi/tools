@@ -1,0 +1,8 @@
+#!/bin/sh
+#TODO: move arguments to opts
+#TODO: support firefox flags passthrough
+if [[ $1 ]]
+then
+	cp $HOME/.mozilla/firefox/*.$1 /tmp/ -r
+	firefox --profile /tmp/*.$1 --new-window $2
+fi

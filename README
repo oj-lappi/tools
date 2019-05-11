@@ -1,0 +1,7 @@
+We should use a socket to talk to i3, a la https://i3wm.org/docs/ipc.html
+That socket sets an i3 variable
+Then we can use the change_to_spawn_dir script to change the working directory of the terminal at spawn-time
+
+
+In fact, IF possible, we might even be able to chagne the working directory of i3, which should change the wd of all subprocesses (including terminals)
+IFF this last option is possible, it is the cleanest

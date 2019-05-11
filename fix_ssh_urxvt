@@ -1,0 +1,21 @@
+#!/bin/bash
+
+user=$1
+server=$2
+ident_file=$3
+
+run_remote() {
+        user=$1
+        commands=$2
+        ssh -i $ident_file $user@$server $commands
+}
+
+fix_ssh_rxvt_term() {
+        printf "Fixing urxvt terminfo for user $user\n\n"
+        user=$1
+        run_remote $user 'mkdir -p ~/.terminfo/r/'
+        scp -i $ident_file  /usr/share/terminfo/r/rxvt-unicode-256color $user@$server:.terminfo/r/
+}
+
+
+fix_ssh_rxvt_term $user
