@@ -1,0 +1,10 @@
+#!/bin/sh
+
+files="$(realpath $@)"
+self=Oskar_Lappi
+
+telegram_dir=~/.telegram-cli
+
+pushd $telegram_dir
+telegram-cli -W -e "send_file $self $files"
+popd

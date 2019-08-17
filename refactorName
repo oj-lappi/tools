@@ -1,0 +1,19 @@
+#!/bin/sh
+find=$1
+replace=$2
+scope=$3
+
+print_usage () {
+echo "Usage:
+refactorName FIND REPLACE SCOPE"
+}
+
+
+if [ -z $3 ]
+then
+print_usage
+else
+	echo "Refactoring $find to $replace in $scope"
+	grep $find $scope -ls|xargs -I {} sed -i -e "s/$find/$replace/g" {}
+fi
+

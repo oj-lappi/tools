@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#IGNORE THIS, JUST USE MAKE.
+
 print_usage(){
 cat << EOF
 Usage: pdf_watch [-o PDF_OUTPUT] -s LATEX_SOURCE [--] FILES...

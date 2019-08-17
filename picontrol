@@ -1,0 +1,75 @@
+#!/bin/bash
+
+print_usage(){
+cat << EOF
+Usage: 
+	picontrol on|start
+		Starts the barrier service on both client and server
+	picontrol off|stop
+		Stops the barrier service on both client and server
+	picontrol
+		Toggles between on and off
+
+	picontrol -h
+		Print this help message
+EOF
+}
+
+
+getopt -n picontrol -o h -l ssl,nossl, -- "$@" > /dev/null
+
+
+while true;do
+	case "$1" in
+		-h)
+			print_usage
+			exit 0
+			;;
+		*)
+			break
+			;;
+	esac
+	shift
+done
+
+onoff=$1
+ip=$(ip route get to 10.0.0.0|head -1|sed '2,$d;s/.*src //g;s/ .*//g')
+
+server_unit=barriers.service
+client_unit=barrierc@${ip}.service
+
+server(){
+	systemctl --user $1 $server_unit
+}
+
+client(){
+	ssh -i ~/.ssh/pi_rsa pi@raspberrypi systemctl --user $1 $client_unit
+}
+
+up(){
+	server start
+	client start
+}
+
+down(){
+	client stop
+	server stop
+}
+
+case "$onoff" in
+	on|start)
+		up
+	;;
+	off|stop)
+		down
+	;;
+	*)
+	if systemctl --user is-active $server_unit &>/dev/null
+	then
+		down
+	else
+		up
+	fi
+	;;
+esac
+

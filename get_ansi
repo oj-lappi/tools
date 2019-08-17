@@ -1,0 +1,2 @@
+#!/bin/bash
+curl http://artscene.textfiles.com/ansi/${1} | iconv -f MS-ANSI -t UTF-8
