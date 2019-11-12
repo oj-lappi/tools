@@ -1,0 +1,6 @@
+#!/bin/bash
+for file in $@
+do
+echo $file
+./sed_strip_tex_header $file > ${file}_part
+done

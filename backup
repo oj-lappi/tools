@@ -1,0 +1,106 @@
+#!/bin/bash
+
+#With inspiration from https://wiki.archlinux.org/index.php/Rsync#Snapshot_backup
+
+print_usage(){
+cat << EOF
+Usage: 
+        $name [--exclude path...] SRC DEST
+		back up SRC to DEST, excluding the paths in --exclude
+	-e, --exclude path...
+		exclude paths from backup
+	-h, --help
+		prints this help message
+EOF
+}
+
+
+name=backup
+
+OPTS=`getopt -o he: --long help,exclude:, -n "$name"  -- "$@"`
+
+if [ $? != 0 ] ; then echo "Failed to parse args" >&2 ; exit 1 ; fi
+
+eval set -- "$OPTS"
+
+while true;do
+        case "$1" in
+                -h|--help)
+                        print_usage
+                        exit 0
+                        ;;
+		-e|--exclude)
+			exclude=$2
+			shift
+			;;
+		--)
+			shift
+			break
+			;;
+                *)
+                        break
+                        ;;
+        esac
+        shift
+done
+
+SRC=$1
+DEST=$2
+
+
+#Sanity checks
+wrong_amount_of_args(){
+	echo "Error: Called with $1 args. $name wants exactly 2 args"
+	exit 1
+}
+not_dir(){
+	echo "Error: $1 is not a directory"
+	exit 1
+}
+no_backup(){
+	echo "No file to link to at ${LASTFILE}"
+	echo "Create an initial full backup at $LASTFILE first"
+	exit 2
+}
+
+
+[ "$#" -eq "2" ] || wrong_amount_of_args $#
+[ -d $SRC ] || not_dir $SRC
+[ -d $DEST ] || not_dir $DEST
+
+SRC=$(realpath "$SRC")
+DEST=$(realpath "$DEST")
+datum=`date "+%Y-%m-%d:%T"`
+DESTFILE="${DEST}/$(basename ${SRC}).${datum}"
+LASTFILE="$DEST/last"
+
+#a	archive
+#H	preserver hard links
+#AX	preserver extended attributes
+#i	list changes 
+#v	verbose
+RSYNC_OPTS="-aHAXiv"
+
+EXCLUDE=--exclude="$DEST"
+IFS=',' read -r -a exclude <<< "$exclude"
+for e in "${exclude[@]}"
+do
+	EXCLUDE="$EXCLUDE --exclude=$e"
+done
+
+
+ionice -c 3 -p $$
+renice +12 -p $$
+
+
+echo "excluding $EXCLUDE"
+
+if [ -d $LASTFILE ]
+then
+	rsync $RSYNC_OPTS $EXCLUDE --link-dest="$LASTFILE/" "$SRC/" "$DESTFILE"
+else
+	rsync $RSYNC_OPTS $EXCLUDE  "$SRC/" "$DESTFILE"
+fi
+rm -f "$LASTFILE"
+
+ln -s "$DESTFILE" "$LASTFILE"

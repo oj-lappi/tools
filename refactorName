@@ -1,7 +1,9 @@
 #!/bin/sh
 find=$1
-replace=$2
-scope=$3
+shift
+replace=$1
+shift
+scope=$@
 
 print_usage () {
 echo "Usage:
@@ -14,6 +16,6 @@ then
 print_usage
 else
 	echo "Refactoring $find to $replace in $scope"
-	grep $find $scope -ls|xargs -I {} sed -i -e "s/$find/$replace/g" {}
+	grep $find $scope -ls|xargs -I {} sed -ibak -e "s/$find/$replace/g" {}
 fi
 

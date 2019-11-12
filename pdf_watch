@@ -55,8 +55,8 @@ fi
 
 #Begin watching
 #TODO:add flag to skip this part
-echo "Ensuring latex packages are linked"
-sudo mktexlsr                    
+#echo "Ensuring latex packages are linked"
+#sudo mktexlsr                    
 
 #Split source and output arguments at period
 #TODO:assumes only one period in filename
@@ -98,17 +98,19 @@ script=$(cat <<EOF
 echo "Compiling pdf from $source\n"
 #Run  pdflatex twice, to update references
 pdflatex -file-line-error -interaction batchmode -- $source
+bibtex ${source_name}.aux
+pdflatex -file-line-error -interaction batchmode -- $source
 pdflatex -file-line-error -interaction batchmode -- $source
 echo ""
 if [ \$? != 0 ] ; then 
 echo "Errors:"
 grep  ".\{1,\}:[0-9]\{1,\}:" $pdflatex_output.log
-echo "Removing pdflatex garbage {aux,out}"
-rm $pdflatex_output.{aux,out}
+echo "Removing pdflatex garbage {out}"
+rm ${pdflatex_output}.{out}
 else
 grep  ".\{1,\}:[0-9]\{1,\}:" $pdflatex_output.log
-echo "Removing pdflatex garbage {aux,log,out}"
-#rm $pdflatex_output.{aux,log,out}
+#echo "Removing pdflatex garbage {log,out}"
+#rm $pdflatex_output.{log,out}
 fi
 EOF
 )

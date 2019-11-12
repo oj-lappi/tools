@@ -1,0 +1,7 @@
+#!/usr/bin/sh
+doi=$(pdftopdoi)
+if [ $doi ]
+then
+	doi2bib $doi
+fi
+

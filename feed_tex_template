@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ -z "$1" ];
+then
+	echo "No filename given"
+	exit 1
+fi
+
+partial_tex=$1
+report_name=$2
+
+
+#TODO: allow names which end in tex, or pdf.
+#strip the extension from those
+
+tex_file=${report_name}.tex
+pdf_file=${report_name}.pdf
+
+template=~/.tools/templates/report.tex
+
+if [ -e tex_file ]
+then
+	echo "Making backup of existing $tex_file"
+	cp $tex_file ${tex_file}.bak 
+fi
+
+tex_text="$(sed 's/\\/\\\\/g' $partial_tex)"
+
+awk -vtex_text="$tex_text" '/\\end{document}/{print tex_text;print;next}1' $template > $tex_file
+
+boil_report $report_name

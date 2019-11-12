@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+#This is based on https://www.youtube.com/watch?v=nO4T8JDNYG0
+echo >> bib.bib
+curl -s "https://api.crossref.org/v1/works/$1/transform/application/x-bibtex" >> bib.bib
+echo >> bib.bib

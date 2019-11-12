@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#TODO: make this configurable or interactive or both
+
+#E.g. don't clear pacmans cache every time
+
+echo "Cleaning pacmans cache..."
+sudo pacman -Sc
+echo ""
+echo "Backing up /etc"
+echo ""
+sudo backup /etc /mnt/backup/etc 
+echo ""
+echo "Backing up /var"
+echo ""
+sudo backup /var /mnt/backup/var
+echo ""
+echo "Backing up /$HOME"
+echo ""
+backup --exclude=".cache,media/movies,security,projects,media/comics,media/scrapes,office/old_computer_backup,.mail" \
+	$HOME /mnt/backup$HOME

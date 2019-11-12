@@ -1,0 +1,2 @@
+#!/usr/bin/sh
+pdfgrep -o '10.[0-9]{4,9}/[-._;()/:A-Z0-9]+' "$1" | sort | uniq -c | sort -rn| awk '{print $2}'
