@@ -41,5 +41,6 @@ echo "Watching videos on $n_screens screens"
 for (( i = 0; i < $n_screens; i++ ))
 do
 	echo "starting window $i"
-	cvlc $dir/**/*{mp4,webm} -Z&
+	cvlc $dir/**/*{mp4,webm} -Z &>/dev/null &
+	disown
 done

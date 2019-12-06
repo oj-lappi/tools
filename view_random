@@ -50,8 +50,9 @@ do
 	echo "starting window $i"
 	if [ $slideshow ]
 	then
-		feh $dir/*{jpg,jpeg,png,bmp,gif} $dir/**/*{jpg,jpeg,png,bmp,gif} -. -z -D $delay& 
+		feh $dir/*{jpg,jpeg,png,bmp,gif} $dir/**/*{jpg,jpeg,png,bmp,gif} -. -z -D $delay &>/dev/null & 
 	else
-		feh $dir/*{jpg,jpeg,png,bmp,gif} $dir/**/*{jpg,jpeg,png,bmp,gif} -. -z&
+		feh $dir/*{jpg,jpeg,png,bmp,gif} $dir/**/*{jpg,jpeg,png,bmp,gif} -. -z &>/dev/null &
 	fi
+	disown
 done

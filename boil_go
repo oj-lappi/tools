@@ -12,13 +12,13 @@ EOF
 if [ -z "$1" ]
 then
         echo "No project name given"
+	print_usage
         exit 1
 fi
 
-
 project_name=$1
 
-template_dir="$HOME/.tools/go_project_templates"
+template_dir="go_project_templates"
 template=default
 
 if [ -n "$2" ]
@@ -26,13 +26,4 @@ then
 	template="$2"
 fi
 
-
-if [ -e $project_name ]
-then
-	echo "Making backup of exisiting $project_name"
-	mv "$project_name" "${project_name}.bak"
-fi
-
-cp -R "$template_dir/$template" $project_name
-
-find ${project_name} -type f|xargs -I {FILES} sed -i "s/{{project_name}}/${project_name}/g" {FILES}
+boil_project "$project_name" "${template_dir}/$template"

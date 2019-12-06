@@ -5,23 +5,28 @@
 print_usage(){
 cat << EOF
 Usage: 
-        $name [--exclude path...] SRC DEST
+        $name [--exclude path...] [-r] SRC DEST
 		back up SRC to DEST, excluding the paths in --exclude
 	-e, --exclude path...
 		exclude paths from backup
 	-h, --help
 		prints this help message
+	-r, --remote
+		SRC is remote
+
 EOF
 }
 
 
 name=backup
 
-OPTS=`getopt -o he: --long help,exclude:, -n "$name"  -- "$@"`
+OPTS=`getopt -o hre: --long help,remote,exclude:, -n "$name"  -- "$@"`
 
 if [ $? != 0 ] ; then echo "Failed to parse args" >&2 ; exit 1 ; fi
 
 eval set -- "$OPTS"
+
+remote=0
 
 while true;do
         case "$1" in
@@ -30,8 +35,12 @@ while true;do
                         exit 0
                         ;;
 		-e|--exclude)
+			#TODO:this will only exclude the last path listed...
 			exclude=$2
 			shift
+			;;
+		-r|--remote)
+			remote=1
 			;;
 		--)
 			shift
@@ -65,11 +74,16 @@ no_backup(){
 
 
 [ "$#" -eq "2" ] || wrong_amount_of_args $#
-[ -d $SRC ] || not_dir $SRC
-[ -d $DEST ] || not_dir $DEST
 
-SRC=$(realpath "$SRC")
+if [ "$remote" -ne "1" ]
+then
+	[ -d $SRC ] || not_dir $SRC
+	SRC=$(realpath "$SRC")
+fi
+
+[ -d $DEST ] || not_dir $DEST
 DEST=$(realpath "$DEST")
+
 datum=`date "+%Y-%m-%d:%T"`
 DESTFILE="${DEST}/$(basename ${SRC}).${datum}"
 LASTFILE="$DEST/last"
