@@ -2,9 +2,17 @@
 
 This repo contains some convenience CLI-tools I've written
 
-## pdf_watch
+## watch_report
 
-Watches files and compiles latex into pdf. Depends on (at least) pdflatex and entr.
+Starts a latex editing environment
+
+## boil_report
+
+Makes boilerplate latex reports and starts watch_report
+
+## boil_project, boil_go
+
+Makes boilerplate go projects
 
 ## comic_make
 
@@ -21,5 +29,3 @@ Watch random videos in any amount of windows, good for vjing. Depends on vlc
 ## view_random
 
 Same as above but for images. Depends on feh.
-
-These last two use & to run in the background, which in vlc's case will leave the actual program (and the video audio) running in the background after you close the windows.
