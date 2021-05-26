@@ -39,4 +39,6 @@ fi
 
 cp -R "$template_dir/$template" $project_name
 
-find ${project_name} -type f|xargs -I {FILES} sed -i "s/{{project_name}}/${project_name}/g" {FILES}
+find ${project_name} -depth -exec rename --filename -v "s/project_name/${project_name}/g" {} \;
+
+find ${project_name} -type f | xargs -I {FILES} sed -i "s/{{project_name}}/${project_name}/g" {FILES}
